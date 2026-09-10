@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+.venv
+.git
+sidecar/sidecar.log
+sidecar/sidecar.err.log
+.sidecar.pid
+addon/__pycache__

@@ -1,0 +1,10 @@
+services:
+  vidspark:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    environment:
+      INCLUDE_PROXY_FALLBACK: "0"
+    ports:
+      - "8002:8002"
+    restart: unless-stopped

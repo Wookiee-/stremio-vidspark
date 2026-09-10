@@ -1,0 +1,20 @@
+# Single-container server: pure-Python addon (Granian :8002). No sidecar.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# ffmpeg for the optional /proxy audio boost (AUDIO_BOOST_DB)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /srv/addon
+COPY addon/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY addon/app ./app
+
+ENV INCLUDE_PROXY_FALLBACK=0
+
+EXPOSE 8002
+CMD ["granian", "--interface", "asgi", "app.main:app", "--host", "0.0.0.0", "--port", "8002", "--workers", "1"]
