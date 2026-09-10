@@ -24,7 +24,7 @@ Stremio gets 2xx itself.
 python start.py    # Granian in the foreground on :7002, Ctrl+C stops it
 ```
 
-`start.bat` does the same for double-click. `PROXY_ENABLED=0` is pinned by
+`PROXY_ENABLED=0` is pinned by
 the launcher, so no video bytes ever flow through this box. Env knobs:
 `ADDON_HOST` (default 127.0.0.1), `ADDON_PORT` (default 7002),
 `PROXY_ENABLED`, `INCLUDE_PROXY_FALLBACK`, `AUDIO_TARGET_LUFS`.
@@ -36,9 +36,9 @@ http://127.0.0.1:7002/manifest.json
 
 ## Run (docker — start/stop the server)
 
-```powershell
-.\docker-start.bat   # docker compose up --build -d  (pure-python image)
-.\docker-stop.bat    # docker compose down
+```bash
+docker compose up --build -d   # start
+docker compose down            # stop
 ```
 
 `Dockerfile.python` is the whole server (python:3.12-slim, no Node):
