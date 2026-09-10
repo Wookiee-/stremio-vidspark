@@ -1,6 +1,6 @@
 """VidSpark Stremio addon — pure Python (FastAPI + httpx over HTTP/2).
 
-Stremio -> :8002/stream/movie|series/{id}.json -> Vidora (direct, no sidecar)
+Stremio -> :7002/stream/movie|series/{id}.json -> Vidora (direct, no sidecar)
 Direct-stream mode: returns the upstream https HLS URL with
 behaviorHints.proxyHeaders so Stremio sends Referer/Origin itself (2xx).
 Set INCLUDE_PROXY_FALLBACK=1 to also append this addon's own /proxy URL

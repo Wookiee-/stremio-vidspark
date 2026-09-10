@@ -5,7 +5,7 @@ Pure-Python Stremio addon for `vidspark.to` (Vidora backend, single auto server 
 ## Architecture
 
 ```
-Stremio -> :8002 (FastAPI + Granian: resolve + direct streams + /proxy)
+Stremio -> :7002 (FastAPI + Granian: resolve + direct streams + /proxy)
          -> https://vidspark.to/api/vidora/... (key scraped from frontend JS)
          -> bx.netrocdn.site / cdn-proxy.sparkvid.workers.dev (HLS)
 ```
@@ -20,12 +20,18 @@ Stremio gets 2xx itself.
 
 ## Run (one window)
 
-Double-click **`start.bat`** — or `.\start.bat` from a console. Granian runs
-in the foreground on `:8002`; `Ctrl+C` stops it. `stop.ps1` kills `:8002`.
+```powershell
+python start.py    # Granian in the foreground on :7002, Ctrl+C stops it
+```
+
+`start.bat` does the same for double-click. `PROXY_ENABLED=0` is pinned by
+the launcher, so no video bytes ever flow through this box. Env knobs:
+`ADDON_HOST` (default 127.0.0.1), `ADDON_PORT` (default 7002),
+`PROXY_ENABLED`, `INCLUDE_PROXY_FALLBACK`, `AUDIO_TARGET_LUFS`.
 
 Install in Stremio:
 ```
-http://127.0.0.1:8002/manifest.json
+http://127.0.0.1:7002/manifest.json
 ```
 
 ## Run (docker — start/stop the server)
@@ -35,10 +41,27 @@ http://127.0.0.1:8002/manifest.json
 .\docker-stop.bat    # docker compose down
 ```
 
-`Dockerfile.python` is the whole server (python:3.12-slim, no Node).
+`Dockerfile.python` is the whole server (python:3.12-slim, no Node):
+Granian on `0.0.0.0:7002`, compose maps `7002:7002`, proxy locked down
+(`INCLUDE_PROXY_FALLBACK=0`, `PROXY_ENABLED=0`).
 Note: the root `Dockerfile` is a leftover from another project (cinesrc,
 ports 7001/8001) — ours is `Dockerfile.python`, referenced explicitly by
 `docker-compose.yml`.
+
+### nginx (on your Ubuntu box)
+
+```nginx
+location / {
+    proxy_pass http://127.0.0.1:7002;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_http_version 1.1;
+}
+```
+
+`Host`/`X-Forwarded-Proto` keep `/proxy` rebase correct if you ever enable
+it; direct streams don't need them. Manifest URL once proxied:
+`https://<your-domain>/manifest.json`.
 
 ## Bandwidth
 
@@ -58,9 +81,9 @@ playlists/segments through this server, plus audio normalization CPU.
 ## Test
 
 ```powershell
-curl.exe http://127.0.0.1:8002/manifest.json
-curl.exe http://127.0.0.1:8002/stream/movie/tt6604188.json
-curl.exe http://127.0.0.1:8002/stream/series/tt4574334:5:3.json
+curl.exe http://127.0.0.1:7002/manifest.json
+curl.exe http://127.0.0.1:7002/stream/movie/tt6604188.json
+curl.exe http://127.0.0.1:7002/stream/series/tt4574334:5:3.json
 ```
 
 Known IDs: movie `tt6604188` (= TMDB 533533, TRON: Ares), series `tt4574334:5:3` (= TMDB 66732 S05E03).

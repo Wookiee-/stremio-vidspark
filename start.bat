@@ -1,3 +1,3 @@
 @echo off
-REM One window: hidden Node sidecar + foreground Granian addon.
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0start.ps1"
+REM Start the server (Python launcher, Granian in this window).
+python "%~dp0start.py"

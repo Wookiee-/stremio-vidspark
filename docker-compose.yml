@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile.python
     environment:
       INCLUDE_PROXY_FALLBACK: "0"
+      PROXY_ENABLED: "0"
     ports:
-      - "8002:8002"
+      - "7002:7002"
     restart: unless-stopped
