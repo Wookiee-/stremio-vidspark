@@ -26,6 +26,8 @@ from . import fallback as fb_provider
 
 ADDON_NAME = os.environ.get("ADDON_NAME", "VidSpark")
 INCLUDE_PROXY_FALLBACK = os.environ.get("INCLUDE_PROXY_FALLBACK", "0") == "1"
+# 1 = include subtitles in emitted streams. Default off.
+INCLUDE_SUBS = os.environ.get("INCLUDE_SUBS", "0") == "1"
 # 0 = /proxy returns 403 and no proxy URLs are emitted: video bytes can
 # never flow through this server (only tiny JSON resolve calls do).
 PROXY_ENABLED = os.environ.get("PROXY_ENABLED", "1") == "1"
@@ -271,7 +273,7 @@ def to_stremio_streams(payload: dict, ctype: str, proxy_base: str = "") -> list:
             {"url": t["directUrl"], "lang": lang_for(t.get("label", ""))}
             for t in (s.get("tracks") or [])
             if t.get("directUrl")
-        ][:12]
+        ][:12] if INCLUDE_SUBS else []
         proxy_headers = {"request": s.get("headers") or {}}
         base_hints = {
             "bingeGroup": "vidspark-vidora",
